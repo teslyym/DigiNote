@@ -46,11 +46,11 @@ const Register = () => {
                 className="flex border border-[#9DA39F] rounded-md  px-2 py-3 items-center  w-full"
               />
             </div>
-            <div className="bg-white w-full pl-4 outline-none">
+            <div className="bg-white w-[400px] pl-4 outline-none">
               <h1 className="text-left pb-3 text-[#001712] text-sm font-medium">
                 Password (minimum of 8 characters)
               </h1>
-              <div className="flex border border-[#9DA39F] rounded-lg px-2 py-3 items-center  w-full justify-between focus-within:border-black valid:border-[#017358]">
+              <div className="flex border border-[#9DA39F] rounded-md px-2 py-3 bg-white w-[400px] pl-4 outline-none focus:border-black items-center justify-between focus-within:border-black">
                 <input
                   className="w-full outline-none"
                   type={showPassword ? "text" : "password"}
@@ -78,6 +78,13 @@ const Register = () => {
               <p className="pt-2 text-[0.875rem]">
                 (Use alphabets, numbers and characters)
               </p>
+            </div>
+            <div className="w-[150] pb-3">
+              <Link to="/login">
+                <button className="bg-blue-500 hover:bg-blue-700 text-white font-nunito font-bold py-2 px-4 rounded">
+                  Login
+                </button>
+              </Link>
             </div>
           </div>
         </div>
