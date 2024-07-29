@@ -59,7 +59,7 @@ const Login = () => {
                 </p>
                 <div className="w-[150] flex items-center justify-center py-3">
                   <Link to="">
-                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-nunito font-bold py-2 px-4 rounded">
+                    <button className="bg-blue-500 hover:bg-blue-700 text-white justify-center font-nunito font-bold py-2 px-4 rounded">
                       Login
                     </button>
                   </Link>
