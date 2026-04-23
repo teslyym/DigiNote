@@ -7,6 +7,7 @@ import Notes from "./Pages/Notes";
 import Reminders from "./Pages/Reminders";
 import Archive from "./Pages/Archive";
 import AppLayout from "./Components/AppLayout";
+import ProtectedRoute from "./Components/ProtectedRoute";
 
 const App = () => {
   return (
@@ -18,7 +19,13 @@ const App = () => {
         <Route path="/register" element={<Register />} />
 
         {/* App pages with sidebar */}
-        <Route element={<AppLayout />}>
+        <Route
+          element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/notes" element={<Notes />} />
           <Route path="/reminders" element={<Reminders />} />
           <Route path="/archive" element={<Archive />} />
