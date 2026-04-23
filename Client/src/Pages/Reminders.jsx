@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const Reminders = () => {
   const [notes, setNotes] = useState([]);
@@ -15,12 +16,14 @@ const Reminders = () => {
 
       if (!res.ok) {
         console.log("Fetch reminders failed:", data.message);
+        toast.error("Failed to fetch reminders.");
         return;
       }
 
       setNotes(data);
     } catch (error) {
       console.log("Error fetching reminder notes:", error);
+      toast.error("Failed to fetch reminders.");
     }
   };
 
@@ -51,14 +54,18 @@ const Reminders = () => {
 
       if (!res.ok) {
         console.log("Clear reminder failed:", updatedNote.message);
+        toast.error("Failed to clear reminder.");
         return;
       }
 
       setNotes((prevNotes) =>
         prevNotes.filter((item) => item._id !== updatedNote._id),
       );
+
+      toast.success("Reminder cleared");
     } catch (error) {
       console.log("Error clearing reminder:", error);
+      toast.error("Failed to clear reminder.");
     }
   };
 

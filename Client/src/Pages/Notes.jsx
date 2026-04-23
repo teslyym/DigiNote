@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import NoteModal from "../Components/NoteModal";
+import toast from "react-hot-toast";
 
 const Notes = () => {
   const [notes, setNotes] = useState([]);
@@ -23,12 +24,14 @@ const Notes = () => {
 
       if (!res.ok) {
         console.log("Fetch failed:", data.message);
+        toast.error("Failed to fetch notes.");
         return;
       }
 
       setNotes(data);
     } catch (error) {
       console.log("Error fetching notes:", error);
+      toast.error("Failed to fetch notes.");
     }
   };
 
@@ -62,12 +65,15 @@ const Notes = () => {
 
         if (!res.ok) {
           console.log("Update failed:", updatedNote.message);
+          toast.error("Failed to update note.");
           return;
         }
 
         setNotes((prevNotes) =>
           prevNotes.map((n) => (n._id === updatedNote._id ? updatedNote : n)),
         );
+
+        toast.success("Note updated");
       } else {
         const res = await fetch("http://localhost:5000/api/notes", {
           method: "POST",
@@ -88,16 +94,19 @@ const Notes = () => {
 
         if (!res.ok) {
           console.log("Create failed:", newNote.message);
+          toast.error("Failed to create note.");
           return;
         }
 
         setNotes((prevNotes) => [newNote, ...prevNotes]);
+        toast.success("Note created");
       }
 
       setNoteToEdit(null);
       setIsModalOpen(false);
     } catch (error) {
       console.log("Error saving note:", error);
+      toast.error("Failed to save note.");
     }
   };
 
@@ -111,12 +120,15 @@ const Notes = () => {
 
       if (!res.ok) {
         console.log("Delete failed:", data.message);
+        toast.error("Failed to delete note.");
         return;
       }
 
       setNotes((prevNotes) => prevNotes.filter((note) => note._id !== id));
+      toast.success("Note deleted");
     } catch (error) {
       console.log("Error deleting note:", error);
+      toast.error("Failed to delete note.");
     }
   };
 
@@ -130,12 +142,15 @@ const Notes = () => {
 
       if (!res.ok) {
         console.log("Archive failed:", data.message);
+        toast.error("Failed to archive note.");
         return;
       }
 
       setNotes((prevNotes) => prevNotes.filter((note) => note._id !== id));
+      toast.success("Note archived");
     } catch (error) {
       console.log("Error archiving note:", error);
+      toast.error("Failed to archive note.");
     }
   };
 

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../Components/Logo";
+import { toast } from "react-hot-toast";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -46,16 +47,16 @@ const Login = () => {
         console.log("Login response:", data);
 
         if (!res.ok) {
-          alert(data.message || "Login failed");
+          toast.error(data.message || "Login failed");
           return;
         }
 
-        alert("Login successful");
+        toast.success("Login successful");
         localStorage.setItem("user", JSON.stringify(data.user));
         navigate("/notes");
       } catch (error) {
         console.log("Login error:", error);
-        alert("Something went wrong");
+        toast.error("Something went wrong");
       }
     }
   };
