@@ -5,10 +5,15 @@ const Notes = () => {
   const [notes, setNotes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [noteToEdit, setNoteToEdit] = useState(null);
+  const user = JSON.parse(localStorage.getItem("user"));
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOrder, setSortOrder] = useState("newest");
 
   const fetchNotes = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/notes");
+      const res = await fetch(
+        `http://localhost:5000/api/notes?userId=${user.id}`,
+      );
       const data = await res.json();
       setNotes(data);
     } catch (error) {
@@ -45,7 +50,11 @@ const Notes = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(note),
+          body: JSON.stringify({
+            title: note.title,
+            content: note.content,
+            userId: user.id,
+          }),
         });
 
         const newNote = await res.json();
@@ -57,7 +66,6 @@ const Notes = () => {
       console.log("Error saving note:", error);
     }
   };
-
   const handleDeleteNote = async (id) => {
     try {
       await fetch(`http://localhost:5000/api/notes/${id}`, {
@@ -79,6 +87,20 @@ const Notes = () => {
     setNoteToEdit(null);
     setIsModalOpen(true);
   };
+  const filteredNotes = notes
+    .filter((note) => {
+      const search = searchTerm.toLowerCase();
+      return (
+        note.title.toLowerCase().includes(search) ||
+        note.content.toLowerCase().includes(search)
+      );
+    })
+    .sort((a, b) => {
+      if (sortOrder === "newest") {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      }
+      return new Date(a.createdAt) - new Date(b.createdAt);
+    });
 
   return (
     <div className="space-y-6">
@@ -100,24 +122,49 @@ const Notes = () => {
         </button>
       </div>
 
-      {notes.length === 0 ? (
+      <div className="flex flex-col gap-3 md:flex-row">
+        <input
+          type="text"
+          placeholder="Search notes..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500"
+        />
+
+        <select
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value)}
+          className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500"
+        >
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+        </select>
+      </div>
+
+      {filteredNotes.length === 0 ? (
         <div className="flex min-h-[400px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-white text-center shadow-sm">
           <div className="mb-4 text-5xl">📝</div>
-          <h2 className="text-xl font-semibold text-slate-800">No notes yet</h2>
+          <h2 className="text-xl font-semibold text-slate-800">
+            {notes.length === 0 ? "No notes yet" : "No matching notes"}
+          </h2>
           <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
-            You have not created any notes yet. Start by adding your first note
-            and keep your ideas organized.
+            {notes.length === 0
+              ? "You have not created any notes yet. Start by adding your first note and keep your ideas organized."
+              : "Try a different search term or clear the search input."}
           </p>
-          <button
-            onClick={handleNewNoteClick}
-            className="mt-6 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
-          >
-            Create First Note
-          </button>
+
+          {notes.length === 0 && (
+            <button
+              onClick={handleNewNoteClick}
+              className="mt-6 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+            >
+              Create First Note
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {notes.map((note) => (
+          {filteredNotes.map((note) => (
             <div
               key={note._id}
               className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
