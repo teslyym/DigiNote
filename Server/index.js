@@ -12,6 +12,7 @@ app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("API is running...");
+  console.log("Mongoose readyState:", mongoose.connection.readyState);
 });
 
 app.use("/api/notes", noteRoutes);
