@@ -1,37 +1,61 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../Components/Logo";
 
 const Login = () => {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [errors, setErrors] = useState({});
 
   const validate = () => {
     const newErrors = {};
 
-    if (!email) {
+    if (!email.trim()) {
       newErrors.email = "Email is required";
     } else if (!email.includes("@")) {
       newErrors.email = "Email must include @";
     }
 
-    if (!password) {
+    if (!password.trim()) {
       newErrors.password = "Password is required";
     }
 
     setErrors(newErrors);
-
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (validate()) {
-      console.log("Form is valid");
-      // 👉 connect backend here later
+      try {
+        const res = await fetch("http://localhost:5000/api/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert(data.message || "Login failed");
+          return;
+        }
+
+        alert("Login successful");
+        localStorage.setItem("user", JSON.stringify(data.user));
+        navigate("/notes");
+      } catch (error) {
+        console.log("Login error:", error);
+        alert("Something went wrong");
+      }
     }
   };
 
@@ -46,9 +70,11 @@ const Login = () => {
           <h2 className="text-2xl font-bold text-slate-900 text-center">
             Welcome Back
           </h2>
+          <p className="text-sm text-slate-500 text-center mt-2">
+            Login to your Digi-Note account
+          </p>
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-            {/* Email */}
             <div>
               <input
                 type="text"
@@ -62,7 +88,6 @@ const Login = () => {
               )}
             </div>
 
-            {/* Password */}
             <div>
               <input
                 type="password"
