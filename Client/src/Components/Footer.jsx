@@ -64,7 +64,7 @@ const Footer = () => {
                 href="mailto:support@diginote.com"
                 className="hover:text-blue-600"
               >
-                support@diginote.com
+                support@digi-note.com
               </a>
               <a href="#" className="hover:text-blue-600">
                 Twitter
