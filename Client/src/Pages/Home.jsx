@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Logo from "../Components/Logo";
+import Footer from "../Components/Footer";
 
 const Home = () => {
   return (
@@ -225,6 +226,7 @@ const Home = () => {
           }
         `}
       </style>
+      <Footer />
     </div>
   );
 };
