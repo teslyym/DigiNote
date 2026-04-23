@@ -8,6 +8,7 @@ const Notes = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   const fetchNotes = async () => {
     try {

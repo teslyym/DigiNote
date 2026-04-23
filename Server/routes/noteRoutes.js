@@ -16,14 +16,20 @@ router.get("/", async (req, res) => {
 
 // CREATE note for a user
 router.post("/", async (req, res) => {
-  const { title, content, userId } = req.body;
+  const { title, content, userId, category } = req.body;
 
   if (!title?.trim() || !content?.trim()) {
     return res.status(400).json({ message: "Title and content are required" });
   }
 
   try {
-    const newNote = new Note({ title, content, userId });
+    const newNote = new Note({
+      title,
+      content,
+      userId,
+      category,
+    });
+
     const savedNote = await newNote.save();
     res.status(201).json(savedNote);
   } catch (err) {
@@ -33,7 +39,7 @@ router.post("/", async (req, res) => {
 
 // UPDATE note
 router.put("/:id", async (req, res) => {
-  const { title, content } = req.body;
+  const { title, content, category } = req.body;
 
   if (!title?.trim() || !content?.trim()) {
     return res.status(400).json({ message: "Title and content are required" });
@@ -42,7 +48,7 @@ router.put("/:id", async (req, res) => {
   try {
     const updatedNote = await Note.findByIdAndUpdate(
       req.params.id,
-      { title, content },
+      { title, content, category },
       { new: true },
     );
 

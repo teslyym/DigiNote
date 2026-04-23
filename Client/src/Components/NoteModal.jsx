@@ -23,6 +23,7 @@ const NoteModal = ({ isOpen, onClose, onSave, noteToEdit }) => {
       ...noteToEdit,
       title,
       content,
+      category,
     });
 
     onClose();
@@ -49,6 +50,15 @@ const NoteModal = ({ isOpen, onClose, onSave, noteToEdit }) => {
           onChange={(e) => setContent(e.target.value)}
           className="h-32 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500"
         />
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="mb-3 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500"
+        >
+          <option value="Personal">Personal</option>
+          <option value="Work">Work</option>
+          <option value="Study">Study</option>
+        </select>
 
         <div className="mt-4 flex justify-end gap-3">
           <button

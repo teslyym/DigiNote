@@ -17,6 +17,10 @@ const noteSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    category: {
+      type: String,
+      default: "Personal",
+    },
   },
   { timestamps: true },
 );
