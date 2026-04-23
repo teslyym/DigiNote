@@ -90,6 +90,17 @@ const Notes = () => {
     setNoteToEdit(null);
     setIsModalOpen(true);
   };
+  const handleArchiveNote = async (id) => {
+    try {
+      await fetch(`http://localhost:5000/api/notes/${id}/archive`, {
+        method: "PUT",
+      });
+
+      setNotes((prevNotes) => prevNotes.filter((note) => note._id !== id));
+    } catch (error) {
+      console.log("Error archiving note:", error);
+    }
+  };
   const filteredNotes = notes
     .filter((note) => {
       const matchesSearch =
@@ -201,6 +212,12 @@ const Notes = () => {
                     className="text-sm font-medium text-red-500 hover:text-red-700"
                   >
                     Delete
+                  </button>
+                  <button
+                    onClick={() => handleArchiveNote(note._id)}
+                    className="text-sm font-medium text-amber-500 hover:text-amber-700"
+                  >
+                    Archive
                   </button>
                 </div>
               </div>
