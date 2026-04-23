@@ -7,16 +7,24 @@ const Sidebar = ({
   setIsSidebarOpen,
   isCollapsed,
   setIsCollapsed,
+  selectedCategory,
+  setSelectedCategory,
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
-
   const user = JSON.parse(localStorage.getItem("user"));
 
   const menuItems = [
     { name: "Notes", path: "/notes", icon: "📝" },
     { name: "Reminders", path: "/reminders", icon: "⏰" },
     { name: "Archive", path: "/archive", icon: "📦" },
+  ];
+
+  const notebookItems = [
+    { name: "All", icon: "📚" },
+    { name: "Personal", icon: "📒" },
+    { name: "Work", icon: "💼" },
+    { name: "Study", icon: "📝" },
   ];
 
   const handleLogout = () => {
@@ -97,6 +105,40 @@ const Sidebar = ({
                     {!isCollapsed && <span>{item.name}</span>}
                   </div>
                 </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="px-3">
+          {!isCollapsed && (
+            <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+              Notebooks
+            </p>
+          )}
+
+          <div className="flex flex-col gap-2">
+            {notebookItems.map((item) => {
+              const active = selectedCategory === item.name;
+
+              return (
+                <button
+                  key={item.name}
+                  onClick={() => {
+                    setSelectedCategory(item.name);
+                    navigate("/notes");
+                    setIsSidebarOpen(false);
+                  }}
+                  className={`rounded-xl px-4 py-3 text-left text-sm transition ${
+                    isCollapsed ? "text-center" : ""
+                  } ${
+                    active
+                      ? "bg-blue-50 text-blue-600"
+                      : "text-slate-600 hover:bg-slate-100"
+                  }`}
+                >
+                  {isCollapsed ? item.icon : `${item.icon} ${item.name}`}
+                </button>
               );
             })}
           </div>

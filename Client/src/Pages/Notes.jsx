@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NoteModal from "../Components/NoteModal";
+import { useOutletContext } from "react-router-dom";
 
 const Notes = () => {
   const [notes, setNotes] = useState([]);
@@ -8,7 +9,8 @@ const Notes = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  //   const [selectedCategory, setSelectedCategory] = useState("All");
+  const { selectedCategory, setSelectedCategory } = useOutletContext();
 
   const fetchNotes = async () => {
     try {
@@ -143,6 +145,16 @@ const Notes = () => {
           <option value="newest">Newest First</option>
           <option value="oldest">Oldest First</option>
         </select>
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500"
+        >
+          <option value="All">All Categories</option>
+          <option value="Personal">Personal</option>
+          <option value="Work">Work</option>
+          <option value="Study">Study</option>
+        </select>
       </div>
 
       {filteredNotes.length === 0 ? (
@@ -192,6 +204,10 @@ const Notes = () => {
                   </button>
                 </div>
               </div>
+
+              <p className="mt-2 inline-block rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600">
+                {note.category || "Personal"}
+              </p>
 
               <p className="mt-3 text-sm leading-6 text-slate-600">
                 {note.content}

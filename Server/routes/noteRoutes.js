@@ -4,10 +4,18 @@ const Note = require("../models/Note");
 
 // GET notes for a specific user
 router.get("/", async (req, res) => {
-  const { userId } = req.query;
+  const { userId, archived } = req.query;
 
   try {
-    const notes = await Note.find({ userId }).sort({ createdAt: -1 });
+    const filter = { userId };
+
+    if (archived === "true") {
+      filter.isArchived = true;
+    } else {
+      filter.isArchived = false;
+    }
+
+    const notes = await Note.find(filter).sort({ createdAt: -1 });
     res.json(notes);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -60,6 +68,40 @@ router.put("/:id", async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
+  router.put("/:id/archive", async (req, res) => {
+    try {
+      const updatedNote = await Note.findByIdAndUpdate(
+        req.params.id,
+        { isArchived: true },
+        { new: true },
+      );
+
+      if (!updatedNote) {
+        return res.status(404).json({ message: "Note not found" });
+      }
+
+      res.json(updatedNote);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+  router.put("/:id/unarchive", async (req, res) => {
+    try {
+      const updatedNote = await Note.findByIdAndUpdate(
+        req.params.id,
+        { isArchived: false },
+        { new: true },
+      );
+
+      if (!updatedNote) {
+        return res.status(404).json({ message: "Note not found" });
+      }
+
+      res.json(updatedNote);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  });
 });
 
 // DELETE note

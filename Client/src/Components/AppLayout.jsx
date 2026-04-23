@@ -5,6 +5,7 @@ import Sidebar from "./Sidebar";
 const AppLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   return (
     <div className="flex min-h-screen bg-slate-50">
@@ -13,6 +14,8 @@ const AppLayout = () => {
         setIsSidebarOpen={setIsSidebarOpen}
         isCollapsed={isCollapsed}
         setIsCollapsed={setIsCollapsed}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
       />
 
       <main className="flex-1 p-4 sm:p-6 md:p-8">
@@ -25,7 +28,7 @@ const AppLayout = () => {
           </button>
         </div>
 
-        <Outlet />
+        <Outlet context={{ selectedCategory, setSelectedCategory }} />
       </main>
     </div>
   );

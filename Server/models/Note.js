@@ -21,6 +21,10 @@ const noteSchema = new mongoose.Schema(
       type: String,
       default: "Personal",
     },
+    isArchived: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );

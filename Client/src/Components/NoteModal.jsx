@@ -3,14 +3,17 @@ import React, { useEffect, useState } from "react";
 const NoteModal = ({ isOpen, onClose, onSave, noteToEdit }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [category, setCategory] = useState("Personal");
 
   useEffect(() => {
     if (noteToEdit) {
       setTitle(noteToEdit.title);
       setContent(noteToEdit.content);
+      setCategory(noteToEdit.category || "Personal");
     } else {
       setTitle("");
       setContent("");
+      setCategory("Personal");
     }
   }, [noteToEdit, isOpen]);
 
