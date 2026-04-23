@@ -15,6 +15,10 @@ const Sidebar = ({
     { name: "Reminders", path: "/reminders", icon: "⏰" },
     { name: "Archive", path: "/archive", icon: "📦" },
   ];
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    window.location.href = "/login";
+  };
 
   return (
     <>
