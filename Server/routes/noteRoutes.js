@@ -22,12 +22,14 @@ router.get("/", async (req, res) => {
   }
 });
 
-// CREATE note for a user
+// CREATE note
 router.post("/", async (req, res) => {
   const { title, content, userId, category } = req.body;
 
-  if (!title?.trim() || !content?.trim()) {
-    return res.status(400).json({ message: "Title and content are required" });
+  if (!title?.trim() || !content?.trim() || !userId) {
+    return res
+      .status(400)
+      .json({ message: "Title, content, and userId are required" });
   }
 
   try {
@@ -35,7 +37,8 @@ router.post("/", async (req, res) => {
       title,
       content,
       userId,
-      category,
+      category: category || "Personal",
+      isArchived: false,
     });
 
     const savedNote = await newNote.save();
@@ -68,40 +71,44 @@ router.put("/:id", async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
-  router.put("/:id/archive", async (req, res) => {
-    try {
-      const updatedNote = await Note.findByIdAndUpdate(
-        req.params.id,
-        { isArchived: true },
-        { new: true },
-      );
+});
 
-      if (!updatedNote) {
-        return res.status(404).json({ message: "Note not found" });
-      }
+// ARCHIVE note
+router.put("/:id/archive", async (req, res) => {
+  try {
+    const updatedNote = await Note.findByIdAndUpdate(
+      req.params.id,
+      { isArchived: true },
+      { new: true },
+    );
 
-      res.json(updatedNote);
-    } catch (err) {
-      res.status(500).json({ message: err.message });
+    if (!updatedNote) {
+      return res.status(404).json({ message: "Note not found" });
     }
-  });
-  router.put("/:id/unarchive", async (req, res) => {
-    try {
-      const updatedNote = await Note.findByIdAndUpdate(
-        req.params.id,
-        { isArchived: false },
-        { new: true },
-      );
 
-      if (!updatedNote) {
-        return res.status(404).json({ message: "Note not found" });
-      }
+    res.json(updatedNote);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
-      res.json(updatedNote);
-    } catch (err) {
-      res.status(500).json({ message: err.message });
+// UNARCHIVE note
+router.put("/:id/unarchive", async (req, res) => {
+  try {
+    const updatedNote = await Note.findByIdAndUpdate(
+      req.params.id,
+      { isArchived: false },
+      { new: true },
+    );
+
+    if (!updatedNote) {
+      return res.status(404).json({ message: "Note not found" });
     }
-  });
+
+    res.json(updatedNote);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 // DELETE note
