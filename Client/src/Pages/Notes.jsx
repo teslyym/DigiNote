@@ -1,43 +1,55 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 const Notes = () => {
-  const [notes, setNotes] = useState([]);
-
-  useEffect(() => {
-    fetch("http://localhost:5000/api/notes") // your backend endpoint
-      .then((res) => res.json())
-      .then((data) => setNotes(data))
-      .catch((err) => console.log(err));
-  }, []);
+  const notes = [];
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-slate-900">My Notes</h1>
-        <button className="rounded-xl bg-blue-600 px-5 py-2 text-white">
-          + New Note
-        </button>
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900">My Notes</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Organize and access your notes in one place.
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <input
+            type="text"
+            placeholder="Search notes..."
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-500 md:w-72"
+          />
+          <button className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">
+            + New Note
+          </button>
+        </div>
       </div>
 
-      {/* Empty state */}
       {notes.length === 0 ? (
-        <div className="text-center text-slate-500 mt-20">
-          <p>No notes yet.</p>
-          <p className="text-sm">Create your first note to get started.</p>
+        <div className="flex min-h-[400px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-white text-center shadow-sm">
+          <div className="mb-4 text-5xl">📝</div>
+          <h2 className="text-xl font-semibold text-slate-800">No notes yet</h2>
+          <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
+            You have not created any notes yet. Start by adding your first note
+            and keep your ideas organized.
+          </p>
+          <button className="mt-6 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700">
+            Create First Note
+          </button>
         </div>
       ) : (
-        /* Notes grid */
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {notes.map((note) => (
             <div
-              key={note._id}
-              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+              key={note.id}
+              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
             >
               <h2 className="text-lg font-semibold text-slate-800">
                 {note.title}
               </h2>
-              <p className="mt-3 text-sm text-slate-600">{note.content}</p>
+              <p className="mt-3 text-sm leading-6 text-slate-600">
+                {note.content}
+              </p>
             </div>
           ))}
         </div>
