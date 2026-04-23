@@ -81,13 +81,18 @@ const Reminders = () => {
       </div>
 
       {notes.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center shadow-sm">
-          <div className="mb-4 text-5xl">⏰</div>
-          <h2 className="text-xl font-semibold text-slate-800">
+        <div className="flex min-h-[420px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-gradient-to-br from-white to-slate-50 px-6 text-center shadow-sm">
+          <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-amber-50 text-5xl shadow-sm">
+            ⏰
+          </div>
+
+          <h2 className="text-2xl font-bold text-slate-800">
             No reminders yet
           </h2>
-          <p className="mt-2 text-sm text-slate-500">
-            Add a reminder to a note and it will show here.
+
+          <p className="mt-3 max-w-md text-sm leading-6 text-slate-500 sm:text-base">
+            Set a reminder on any note to keep track of important tasks,
+            deadlines, or ideas you do not want to forget.
           </p>
         </div>
       ) : (

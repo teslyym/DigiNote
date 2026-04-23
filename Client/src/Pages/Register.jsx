@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Logo from "../Components/Logo";
+import { toast } from "react-hot-toast";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -51,11 +52,11 @@ const Register = () => {
         const data = await res.json();
 
         if (!res.ok) {
-          alert(data.message || "Registration failed");
+          toast.error(data.message || "Registration failed");
           return;
         }
 
-        alert("Registration successful");
+        toast.success("Registration successful");
         console.log(data);
 
         setName("");
@@ -63,7 +64,7 @@ const Register = () => {
         setPassword("");
       } catch (error) {
         console.log("Registration error:", error);
-        alert("Something went wrong");
+        toast.error("Something went wrong");
       }
     }
   };

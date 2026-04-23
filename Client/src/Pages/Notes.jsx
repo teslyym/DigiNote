@@ -233,25 +233,50 @@ const Notes = () => {
       </div>
 
       {filteredNotes.length === 0 ? (
-        <div className="flex min-h-[400px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-white text-center shadow-sm">
-          <div className="mb-4 text-5xl">📝</div>
-          <h2 className="text-xl font-semibold text-slate-800">
+        <div className="flex min-h-[420px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-gradient-to-br from-white to-slate-50 px-6 text-center shadow-sm">
+          <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-blue-50 text-5xl shadow-sm">
+            {notes.length === 0 ? "📝" : "🔎"}
+          </div>
+
+          <h2 className="text-2xl font-bold text-slate-800">
             {notes.length === 0 ? "No notes yet" : "No matching notes"}
           </h2>
-          <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
+
+          <p className="mt-3 max-w-md text-sm leading-6 text-slate-500 sm:text-base">
             {notes.length === 0
-              ? "You have not created any notes yet. Start by adding your first note and keep your ideas organized."
-              : "Try a different search term or clear the search input."}
+              ? "Start capturing your ideas, tasks, and important thoughts in one beautiful place."
+              : "We couldn’t find any notes that match your search or selected category. Try adjusting your filters."}
           </p>
 
-          {notes.length === 0 && (
-            <button
-              onClick={handleNewNoteClick}
-              className="mt-6 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
-            >
-              Create First Note
-            </button>
-          )}
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            {notes.length === 0 ? (
+              <button
+                onClick={handleNewNoteClick}
+                className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+              >
+                Create Your First Note
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={() => setSearchTerm("")}
+                  className="rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  Clear Search
+                </button>
+                <button
+                  onClick={() => {
+                    setSearchTerm("");
+                    setSelectedCategory("All");
+                    setSortOrder("newest");
+                  }}
+                  className="rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  Reset All
+                </button>
+              </>
+            )}
+          </div>
         </div>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
