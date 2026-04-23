@@ -62,6 +62,11 @@ const Login = () => {
   useEffect(() => {
     if (!window.google || !googleButtonRef.current) return;
 
+    console.log("GOOGLE CLIENT ID:", import.meta.env.VITE_GOOGLE_CLIENT_ID);
+    console.log("ORIGIN:", window.location.origin);
+
+    googleButtonRef.current.innerHTML = "";
+
     window.google.accounts.id.initialize({
       client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
       callback: handleGoogleResponse,
