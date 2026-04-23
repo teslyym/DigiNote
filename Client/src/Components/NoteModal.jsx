@@ -38,7 +38,10 @@ const NoteModal = ({ isOpen, onClose, onSave, noteToEdit }) => {
       content,
       category,
       hasReminder,
-      reminderDate: hasReminder ? new Date(reminderDate).toISOString() : null,
+      reminderDate:
+        hasReminder && reminderDate
+          ? new Date(reminderDate).toISOString()
+          : null,
     });
 
     onClose();
@@ -59,12 +62,6 @@ const NoteModal = ({ isOpen, onClose, onSave, noteToEdit }) => {
           className="mb-3 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500"
         />
 
-        <textarea
-          placeholder="Write your note..."
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className="h-32 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500"
-        />
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
@@ -75,13 +72,12 @@ const NoteModal = ({ isOpen, onClose, onSave, noteToEdit }) => {
           <option value="Study">Study</option>
         </select>
 
-        <div className="mt-4 flex items-center justify-between">
-          <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
+        <div className="mb-3">
+          <label className="mb-2 flex cursor-pointer items-center gap-2 text-sm text-slate-600">
             <input
               type="checkbox"
               checked={hasReminder}
               onChange={(e) => setHasReminder(e.target.checked)}
-              className="form-checkbox"
             />
             Set Reminder
           </label>
@@ -91,10 +87,17 @@ const NoteModal = ({ isOpen, onClose, onSave, noteToEdit }) => {
               type="datetime-local"
               value={reminderDate}
               onChange={(e) => setReminderDate(e.target.value)}
-              className="rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500"
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500"
             />
           )}
         </div>
+
+        <textarea
+          placeholder="Write your note..."
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          className="h-32 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500"
+        />
 
         <div className="mt-4 flex justify-end gap-3">
           <button
