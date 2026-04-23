@@ -1,23 +1,31 @@
 import React, { useEffect, useState } from "react";
-import NoteModal from "../Components/NoteModal";
 import { useOutletContext } from "react-router-dom";
+import NoteModal from "../Components/NoteModal";
 
 const Notes = () => {
   const [notes, setNotes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [noteToEdit, setNoteToEdit] = useState(null);
-  const user = JSON.parse(localStorage.getItem("user"));
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");
-  //   const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const user = JSON.parse(localStorage.getItem("user"));
   const { selectedCategory, setSelectedCategory } = useOutletContext();
 
   const fetchNotes = async () => {
+    if (!user?.id) return;
+
     try {
       const res = await fetch(
-        `http://localhost:5000/api/notes?userId=${user.id}`,
+        `http://localhost:5000/api/notes?userId=${user.id}&archived=false`,
       );
       const data = await res.json();
+
+      if (!res.ok) {
+        console.log("Fetch failed:", data.message);
+        return;
+      }
+
       setNotes(data);
     } catch (error) {
       console.log("Error fetching notes:", error);
@@ -25,10 +33,14 @@ const Notes = () => {
   };
 
   useEffect(() => {
-    fetchNotes();
+    if (user?.id) {
+      fetchNotes();
+    }
   }, []);
 
   const handleSaveNote = async (note) => {
+    if (!user?.id) return;
+
     try {
       if (note._id) {
         const res = await fetch(`http://localhost:5000/api/notes/${note._id}`, {
@@ -47,6 +59,11 @@ const Notes = () => {
         });
 
         const updatedNote = await res.json();
+
+        if (!res.ok) {
+          console.log("Update failed:", updatedNote.message);
+          return;
+        }
 
         setNotes((prevNotes) =>
           prevNotes.map((n) => (n._id === updatedNote._id ? updatedNote : n)),
@@ -68,23 +85,57 @@ const Notes = () => {
         });
 
         const newNote = await res.json();
+
+        if (!res.ok) {
+          console.log("Create failed:", newNote.message);
+          return;
+        }
+
         setNotes((prevNotes) => [newNote, ...prevNotes]);
       }
 
       setNoteToEdit(null);
+      setIsModalOpen(false);
     } catch (error) {
       console.log("Error saving note:", error);
     }
   };
+
   const handleDeleteNote = async (id) => {
     try {
-      await fetch(`http://localhost:5000/api/notes/${id}`, {
+      const res = await fetch(`http://localhost:5000/api/notes/${id}`, {
         method: "DELETE",
       });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.log("Delete failed:", data.message);
+        return;
+      }
 
       setNotes((prevNotes) => prevNotes.filter((note) => note._id !== id));
     } catch (error) {
       console.log("Error deleting note:", error);
+    }
+  };
+
+  const handleArchiveNote = async (id) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/notes/${id}/archive`, {
+        method: "PUT",
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.log("Archive failed:", data.message);
+        return;
+      }
+
+      setNotes((prevNotes) => prevNotes.filter((note) => note._id !== id));
+    } catch (error) {
+      console.log("Error archiving note:", error);
     }
   };
 
@@ -97,17 +148,7 @@ const Notes = () => {
     setNoteToEdit(null);
     setIsModalOpen(true);
   };
-  const handleArchiveNote = async (id) => {
-    try {
-      await fetch(`http://localhost:5000/api/notes/${id}/archive`, {
-        method: "PUT",
-      });
 
-      setNotes((prevNotes) => prevNotes.filter((note) => note._id !== id));
-    } catch (error) {
-      console.log("Error archiving note:", error);
-    }
-  };
   const filteredNotes = notes
     .filter((note) => {
       const matchesSearch =
@@ -163,6 +204,7 @@ const Notes = () => {
           <option value="newest">Newest First</option>
           <option value="oldest">Oldest First</option>
         </select>
+
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
@@ -207,6 +249,7 @@ const Notes = () => {
                 <h2 className="text-lg font-semibold text-slate-800">
                   {note.title}
                 </h2>
+
                 <div className="flex gap-3">
                   <button
                     onClick={() => handleEditClick(note)}
@@ -214,12 +257,14 @@ const Notes = () => {
                   >
                     Edit
                   </button>
+
                   <button
                     onClick={() => handleDeleteNote(note._id)}
                     className="text-sm font-medium text-red-500 hover:text-red-700"
                   >
                     Delete
                   </button>
+
                   <button
                     onClick={() => handleArchiveNote(note._id)}
                     className="text-sm font-medium text-amber-500 hover:text-amber-700"
@@ -229,9 +274,12 @@ const Notes = () => {
                 </div>
               </div>
 
-              <p className="mt-2 inline-block rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600">
-                {note.category || "Personal"}
-              </p>
+              <div className="mt-2">
+                <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600">
+                  {note.category || "Personal"}
+                </span>
+              </div>
+
               {note.hasReminder && note.reminderDate && (
                 <p className="mt-2 text-xs font-medium text-amber-600">
                   ⏰ {new Date(note.reminderDate).toLocaleString()}
