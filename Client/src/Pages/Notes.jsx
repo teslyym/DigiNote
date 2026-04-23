@@ -36,6 +36,18 @@ const Notes = () => {
     }
   };
 
+  const handleDeleteNote = async (id) => {
+    try {
+      await fetch(`http://localhost:5000/api/notes/${id}`, {
+        method: "DELETE",
+      });
+
+      setNotes((prevNotes) => prevNotes.filter((note) => note._id !== id));
+    } catch (error) {
+      console.log("Error deleting note:", error);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -76,12 +88,22 @@ const Notes = () => {
               key={note._id}
               className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
             >
-              <h2 className="text-lg font-semibold text-slate-800">
-                {note.title}
-              </h2>
+              <div className="flex items-start justify-between gap-3">
+                <h2 className="text-lg font-semibold text-slate-800">
+                  {note.title}
+                </h2>
+                <button
+                  onClick={() => handleDeleteNote(note._id)}
+                  className="text-sm font-medium text-red-500 transition hover:text-red-700"
+                >
+                  Delete
+                </button>
+              </div>
+
               <p className="mt-3 text-sm leading-6 text-slate-600">
                 {note.content}
               </p>
+
               <p className="mt-4 text-xs text-slate-400">
                 {new Date(note.createdAt).toLocaleString()}
               </p>
