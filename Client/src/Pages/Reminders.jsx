@@ -5,11 +5,19 @@ const Reminders = () => {
   const user = JSON.parse(localStorage.getItem("user"));
 
   const fetchReminderNotes = async () => {
+    if (!user?.id) return;
+
     try {
       const res = await fetch(
         `http://localhost:5000/api/notes/reminders/list?userId=${user.id}`,
       );
       const data = await res.json();
+
+      if (!res.ok) {
+        console.log("Fetch reminders failed:", data.message);
+        return;
+      }
+
       setNotes(data);
     } catch (error) {
       console.log("Error fetching reminder notes:", error);
@@ -21,6 +29,38 @@ const Reminders = () => {
       fetchReminderNotes();
     }
   }, []);
+
+  const handleClearReminder = async (note) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/notes/${note._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: note.title,
+          content: note.content,
+          category: note.category,
+          hasReminder: false,
+          reminderDate: null,
+          userId: user.id,
+        }),
+      });
+
+      const updatedNote = await res.json();
+
+      if (!res.ok) {
+        console.log("Clear reminder failed:", updatedNote.message);
+        return;
+      }
+
+      setNotes((prevNotes) =>
+        prevNotes.filter((item) => item._id !== updatedNote._id),
+      );
+    } catch (error) {
+      console.log("Error clearing reminder:", error);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -48,11 +88,20 @@ const Reminders = () => {
           {notes.map((note) => (
             <div
               key={note._id}
-              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
             >
-              <h2 className="text-lg font-semibold text-slate-800">
-                {note.title}
-              </h2>
+              <div className="flex items-start justify-between gap-3">
+                <h2 className="text-lg font-semibold text-slate-800">
+                  {note.title}
+                </h2>
+
+                <button
+                  onClick={() => handleClearReminder(note)}
+                  className="text-sm font-medium text-red-500 hover:text-red-700"
+                >
+                  Clear
+                </button>
+              </div>
 
               <div className="mt-2">
                 <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600">
@@ -66,6 +115,10 @@ const Reminders = () => {
 
               <p className="mt-4 text-sm font-medium text-amber-600">
                 ⏰ {new Date(note.reminderDate).toLocaleString()}
+              </p>
+
+              <p className="mt-3 text-xs text-slate-400">
+                Created: {new Date(note.createdAt).toLocaleString()}
               </p>
             </div>
           ))}
