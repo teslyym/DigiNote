@@ -10,7 +10,7 @@ const Reminders = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/notes/reminders/list?userId=${user.id}`,
+        `${import.meta.env.VITE_API_URL}/api/notes/reminders/list?userId=${user.id}`,
       );
       const data = await res.json();
 
@@ -35,20 +35,23 @@ const Reminders = () => {
 
   const handleClearReminder = async (note) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/notes/${note._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/notes/${note._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: note.title,
+            content: note.content,
+            category: note.category,
+            hasReminder: false,
+            reminderDate: null,
+            userId: user.id,
+          }),
         },
-        body: JSON.stringify({
-          title: note.title,
-          content: note.content,
-          category: note.category,
-          hasReminder: false,
-          reminderDate: null,
-          userId: user.id,
-        }),
-      });
+      );
 
       const updatedNote = await res.json();
 

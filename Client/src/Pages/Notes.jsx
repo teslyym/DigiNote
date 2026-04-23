@@ -18,7 +18,7 @@ const Notes = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/notes?userId=${user.id}&archived=false`,
+        `${import.meta.env.VITE_API_URL}/api/notes?userId=${user.id}&archived=false`,
       );
       const data = await res.json();
 
@@ -46,20 +46,23 @@ const Notes = () => {
 
     try {
       if (note._id) {
-        const res = await fetch(`http://localhost:5000/api/notes/${note._id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/notes/${note._id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title: note.title,
+              content: note.content,
+              category: note.category,
+              hasReminder: note.hasReminder,
+              reminderDate: note.reminderDate,
+              userId: user.id,
+            }),
           },
-          body: JSON.stringify({
-            title: note.title,
-            content: note.content,
-            category: note.category,
-            hasReminder: note.hasReminder,
-            reminderDate: note.reminderDate,
-            userId: user.id,
-          }),
-        });
+        );
 
         const updatedNote = await res.json();
 
@@ -75,7 +78,7 @@ const Notes = () => {
 
         toast.success("Note updated");
       } else {
-        const res = await fetch("http://localhost:5000/api/notes", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/notes`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -112,9 +115,12 @@ const Notes = () => {
 
   const handleDeleteNote = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/notes/${id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/notes/${id}`,
+        {
+          method: "DELETE",
+        },
+      );
 
       const data = await res.json();
 
@@ -134,9 +140,12 @@ const Notes = () => {
 
   const handleArchiveNote = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/notes/${id}/archive`, {
-        method: "PUT",
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/notes/${id}/archive`,
+        {
+          method: "PUT",
+        },
+      );
 
       const data = await res.json();
 
