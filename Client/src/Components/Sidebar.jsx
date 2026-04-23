@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "./Logo";
 
 const Sidebar = ({
@@ -9,15 +9,19 @@ const Sidebar = ({
   setIsCollapsed,
 }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const menuItems = [
     { name: "Notes", path: "/notes", icon: "📝" },
     { name: "Reminders", path: "/reminders", icon: "⏰" },
     { name: "Archive", path: "/archive", icon: "📦" },
   ];
+
   const handleLogout = () => {
     localStorage.removeItem("user");
-    window.location.href = "/login";
+    navigate("/login");
   };
 
   return (
@@ -50,7 +54,6 @@ const Sidebar = ({
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
               className="hidden rounded-lg px-2 py-1 text-slate-500 hover:bg-slate-100 lg:block"
-              title="Toggle sidebar"
             >
               {isCollapsed ? "→" : "←"}
             </button>
@@ -99,36 +102,24 @@ const Sidebar = ({
           </div>
         </div>
 
-        <div className="px-3">
-          {!isCollapsed && (
-            <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
-              Notebooks
-            </p>
+        <div className="mt-auto px-3 pb-4">
+          {!isCollapsed && user && (
+            <div className="mb-3 rounded-xl bg-slate-50 px-4 py-3">
+              <p className="text-sm font-semibold text-slate-800">
+                {user.name || "User"}
+              </p>
+              <p className="text-xs text-slate-500">{user.email}</p>
+            </div>
           )}
 
-          <div className="flex flex-col gap-2">
-            <div
-              className={`cursor-pointer rounded-xl px-4 py-3 text-sm text-slate-600 transition hover:bg-slate-100 ${
-                isCollapsed ? "text-center" : ""
-              }`}
-            >
-              {isCollapsed ? "📒" : "📒 Personal"}
-            </div>
-            <div
-              className={`cursor-pointer rounded-xl px-4 py-3 text-sm text-slate-600 transition hover:bg-slate-100 ${
-                isCollapsed ? "text-center" : ""
-              }`}
-            >
-              {isCollapsed ? "💼" : "💼 Work"}
-            </div>
-            <div
-              className={`cursor-pointer rounded-xl px-4 py-3 text-sm text-slate-600 transition hover:bg-slate-100 ${
-                isCollapsed ? "text-center" : ""
-              }`}
-            >
-              {isCollapsed ? "📚" : "📚 Study"}
-            </div>
-          </div>
+          <button
+            onClick={handleLogout}
+            className={`w-full rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600 transition hover:bg-red-100 ${
+              isCollapsed ? "text-center" : ""
+            }`}
+          >
+            {isCollapsed ? "↩" : "Logout"}
+          </button>
         </div>
       </aside>
     </>
