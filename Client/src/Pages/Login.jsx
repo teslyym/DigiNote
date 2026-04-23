@@ -30,15 +30,18 @@ const Login = () => {
 
   const handleGoogleResponse = async (response) => {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/google", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/auth/google`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            credential: response.credential,
+          }),
         },
-        body: JSON.stringify({
-          credential: response.credential,
-        }),
-      });
+      );
 
       const data = await res.json();
 

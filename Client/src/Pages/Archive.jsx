@@ -10,7 +10,7 @@ const Archive = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/notes?userId=${user.id}&archived=true`,
+        `${import.meta.env.VITE_API_URL}/api/notes?userId=${user.id}&archived=true`,
       );
       const data = await res.json();
 
@@ -36,7 +36,7 @@ const Archive = () => {
   const handleUnarchive = async (id) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/notes/${id}/unarchive`,
+        `${import.meta.env.VITE_API_URL}/api/notes/${id}/unarchive`,
         {
           method: "PUT",
         },
