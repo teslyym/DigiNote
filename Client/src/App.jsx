@@ -1,28 +1,27 @@
-import "./App.css";
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AppLayout from "./Components/AppLayout";
 import Home from "./Pages/Home";
-import Register from "./Pages/Register";
 import Login from "./Pages/Login";
-import Sidebar from "./Components/AppLayout";
+import Register from "./Pages/Register";
+import Notes from "./Pages/Notes";
 
-function App() {
+const App = () => {
   return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
+    <BrowserRouter>
+      <Routes>
+        {/* Public Pages */}
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-          {/* Protected Routes */}
-          <Route element={<AppLayout />}>
-            <Route path="/notes" element={<Notes />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </>
+        {/* App Pages With Sidebar */}
+        <Route element={<AppLayout />}>
+          <Route path="/notes" element={<Notes />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
-}
+};
 
 export default App;
