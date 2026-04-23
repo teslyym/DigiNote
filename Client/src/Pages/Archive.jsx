@@ -1,18 +1,29 @@
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const Archive = () => {
   const [notes, setNotes] = useState([]);
   const user = JSON.parse(localStorage.getItem("user"));
 
   const fetchArchivedNotes = async () => {
+    if (!user?.id) return;
+
     try {
       const res = await fetch(
         `http://localhost:5000/api/notes?userId=${user.id}&archived=true`,
       );
       const data = await res.json();
+
+      if (!res.ok) {
+        console.log("Fetch archived notes failed:", data.message);
+        toast.error("Failed to fetch archived notes.");
+        return;
+      }
+
       setNotes(data);
     } catch (error) {
       console.log("Error fetching archived notes:", error);
+      toast.error("Failed to fetch archived notes.");
     }
   };
 
@@ -24,13 +35,26 @@ const Archive = () => {
 
   const handleUnarchive = async (id) => {
     try {
-      await fetch(`http://localhost:5000/api/notes/${id}/unarchive`, {
-        method: "PUT",
-      });
+      const res = await fetch(
+        `http://localhost:5000/api/notes/${id}/unarchive`,
+        {
+          method: "PUT",
+        },
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.log("Unarchive failed:", data.message);
+        toast.error("Failed to restore note.");
+        return;
+      }
 
       setNotes((prevNotes) => prevNotes.filter((note) => note._id !== id));
+      toast.success("Note restored");
     } catch (error) {
       console.log("Error unarchiving note:", error);
+      toast.error("Failed to restore note.");
     }
   };
 
@@ -46,13 +70,18 @@ const Archive = () => {
       </div>
 
       {notes.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center shadow-sm">
-          <div className="mb-4 text-5xl">📦</div>
-          <h2 className="text-xl font-semibold text-slate-800">
+        <div className="flex min-h-[420px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-gradient-to-br from-white to-slate-50 px-6 text-center shadow-sm">
+          <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-slate-100 text-5xl shadow-sm">
+            📦
+          </div>
+
+          <h2 className="text-2xl font-bold text-slate-800">
             No archived notes
           </h2>
-          <p className="mt-2 text-sm text-slate-500">
-            Archived notes will show up here.
+
+          <p className="mt-3 max-w-md text-sm leading-6 text-slate-500 sm:text-base">
+            Notes you archive will be stored here, so you can restore them
+            whenever you need them again.
           </p>
         </div>
       ) : (
@@ -60,12 +89,13 @@ const Archive = () => {
           {notes.map((note) => (
             <div
               key={note._id}
-              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
             >
               <div className="flex items-start justify-between gap-3">
                 <h2 className="text-lg font-semibold text-slate-800">
                   {note.title}
                 </h2>
+
                 <button
                   onClick={() => handleUnarchive(note._id)}
                   className="text-sm font-medium text-blue-500 hover:text-blue-700"
@@ -79,6 +109,12 @@ const Archive = () => {
                   {note.category || "Personal"}
                 </span>
               </div>
+
+              {note.hasReminder && note.reminderDate && (
+                <p className="mt-2 text-xs font-medium text-amber-600">
+                  ⏰ {new Date(note.reminderDate).toLocaleString()}
+                </p>
+              )}
 
               <p className="mt-3 text-sm leading-6 text-slate-600">
                 {note.content}
