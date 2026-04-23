@@ -4,16 +4,26 @@ const NoteModal = ({ isOpen, onClose, onSave, noteToEdit }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("Personal");
+  const [hasReminder, setHasReminder] = useState(false);
+  const [reminderDate, setReminderDate] = useState("");
 
   useEffect(() => {
     if (noteToEdit) {
       setTitle(noteToEdit.title);
       setContent(noteToEdit.content);
       setCategory(noteToEdit.category || "Personal");
+      setHasReminder(noteToEdit.hasReminder || false);
+      setReminderDate(
+        noteToEdit.reminderDate
+          ? new Date(noteToEdit.reminderDate).toISOString().slice(0, 16)
+          : "",
+      );
     } else {
       setTitle("");
       setContent("");
       setCategory("Personal");
+      setHasReminder(false);
+      setReminderDate("");
     }
   }, [noteToEdit, isOpen]);
 
@@ -27,6 +37,8 @@ const NoteModal = ({ isOpen, onClose, onSave, noteToEdit }) => {
       title,
       content,
       category,
+      hasReminder,
+      reminderDate: hasReminder ? new Date(reminderDate).toISOString() : null,
     });
 
     onClose();
@@ -62,6 +74,27 @@ const NoteModal = ({ isOpen, onClose, onSave, noteToEdit }) => {
           <option value="Work">Work</option>
           <option value="Study">Study</option>
         </select>
+
+        <div className="mt-4 flex items-center justify-between">
+          <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
+            <input
+              type="checkbox"
+              checked={hasReminder}
+              onChange={(e) => setHasReminder(e.target.checked)}
+              className="form-checkbox"
+            />
+            Set Reminder
+          </label>
+
+          {hasReminder && (
+            <input
+              type="datetime-local"
+              value={reminderDate}
+              onChange={(e) => setReminderDate(e.target.value)}
+              className="rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500"
+            />
+          )}
+        </div>
 
         <div className="mt-4 flex justify-end gap-3">
           <button

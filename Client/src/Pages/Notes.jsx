@@ -39,6 +39,10 @@ const Notes = () => {
           body: JSON.stringify({
             title: note.title,
             content: note.content,
+            category: note.category,
+            hasReminder: note.hasReminder,
+            reminderDate: note.reminderDate,
+            userId: user.id,
           }),
         });
 
@@ -56,6 +60,9 @@ const Notes = () => {
           body: JSON.stringify({
             title: note.title,
             content: note.content,
+            category: note.category,
+            hasReminder: note.hasReminder,
+            reminderDate: note.reminderDate,
             userId: user.id,
           }),
         });
@@ -225,6 +232,11 @@ const Notes = () => {
               <p className="mt-2 inline-block rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600">
                 {note.category || "Personal"}
               </p>
+              {note.hasReminder && note.reminderDate && (
+                <p className="mt-2 text-xs font-medium text-amber-600">
+                  ⏰ {new Date(note.reminderDate).toLocaleString()}
+                </p>
+              )}
 
               <p className="mt-3 text-sm leading-6 text-slate-600">
                 {note.content}

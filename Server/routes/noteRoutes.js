@@ -24,7 +24,8 @@ router.get("/", async (req, res) => {
 
 // CREATE note
 router.post("/", async (req, res) => {
-  const { title, content, userId, category } = req.body;
+  const { title, content, userId, category, reminderDate, hasReminder } =
+    req.body;
 
   if (!title?.trim() || !content?.trim() || !userId) {
     return res
@@ -39,6 +40,8 @@ router.post("/", async (req, res) => {
       userId,
       category: category || "Personal",
       isArchived: false,
+      reminderDate: reminderDate || null,
+      hasReminder: hasReminder || false,
     });
 
     const savedNote = await newNote.save();
@@ -50,7 +53,7 @@ router.post("/", async (req, res) => {
 
 // UPDATE note
 router.put("/:id", async (req, res) => {
-  const { title, content, category } = req.body;
+  const { title, content, category, reminderDate, hasReminder } = req.body;
 
   if (!title?.trim() || !content?.trim()) {
     return res.status(400).json({ message: "Title and content are required" });
@@ -59,7 +62,7 @@ router.put("/:id", async (req, res) => {
   try {
     const updatedNote = await Note.findByIdAndUpdate(
       req.params.id,
-      { title, content, category },
+      { title, content, category, reminderDate, hasReminder },
       { new: true },
     );
 
@@ -106,6 +109,23 @@ router.put("/:id/unarchive", async (req, res) => {
     }
 
     res.json(updatedNote);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Get Reminders
+router.get("/reminders/list", async (req, res) => {
+  const { userId } = req.query;
+
+  try {
+    const notes = await Note.find({
+      userId,
+      hasReminder: true,
+      isArchived: false,
+    }).sort({ reminderDate: 1 });
+
+    res.json(notes);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
