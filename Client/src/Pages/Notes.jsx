@@ -90,11 +90,14 @@ const Notes = () => {
   };
   const filteredNotes = notes
     .filter((note) => {
-      const search = searchTerm.toLowerCase();
-      return (
-        note.title.toLowerCase().includes(search) ||
-        note.content.toLowerCase().includes(search)
-      );
+      const matchesSearch =
+        note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        note.content.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesCategory =
+        selectedCategory === "All" || note.category === selectedCategory;
+
+      return matchesSearch && matchesCategory;
     })
     .sort((a, b) => {
       if (sortOrder === "newest") {
