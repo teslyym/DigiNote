@@ -2,6 +2,8 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const router = express.Router();
 const User = require("../models/User");
+const { OAuth2Client } = require("google-auth-library");
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Register
 router.post("/register", async (req, res) => {
@@ -70,6 +72,65 @@ router.post("/login", async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
+
+    router.post("/google", async (req, res) => {
+      const { credential } = req.body;
+
+      if (!credential) {
+        return res
+          .status(400)
+          .json({ message: "Google credential is required" });
+      }
+
+      try {
+        const ticket = await client.verifyIdToken({
+          idToken: credential,
+          audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+
+        const googleId = payload.sub;
+        const email = payload.email;
+        const name = payload.name || "Google User";
+        const avatar = payload.picture || "";
+
+        let user = await User.findOne({
+          $or: [{ email }, { googleId }],
+        });
+
+        if (!user) {
+          user = await User.create({
+            name,
+            email,
+            googleId,
+            avatar,
+            password: "",
+          });
+        } else {
+          if (!user.googleId) user.googleId = googleId;
+          if (!user.avatar && avatar) user.avatar = avatar;
+          if (!user.name && name) user.name = name;
+          await user.save();
+        }
+
+        return res.status(200).json({
+          message: "Google login successful",
+          user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            avatar: user.avatar,
+            isPro: user.isPro,
+          },
+        });
+      } catch (error) {
+        console.log("Google auth error:", error);
+        return res
+          .status(500)
+          .json({ message: "Google authentication failed" });
+      }
+    });
 
     res.status(200).json({
       message: "Login successful",

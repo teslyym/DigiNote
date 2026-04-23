@@ -1,9 +1,12 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../Components/Logo";
-import { toast } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 const Register = () => {
+  const navigate = useNavigate();
+  const googleButtonRef = useRef(null);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,6 +35,53 @@ const Register = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleGoogleResponse = async (response) => {
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/google", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          credential: response.credential,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message || "Google sign-up failed");
+        return;
+      }
+
+      localStorage.setItem("user", JSON.stringify(data.user));
+      toast.success("Signed in with Google");
+      navigate("/notes");
+    } catch (error) {
+      console.log("Google register error:", error);
+      toast.error("Google sign-up failed");
+    }
+  };
+
+  useEffect(() => {
+    if (!window.google || !googleButtonRef.current) return;
+
+    window.google.accounts.id.initialize({
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+      callback: handleGoogleResponse,
+    });
+
+    googleButtonRef.current.innerHTML = "";
+
+    window.google.accounts.id.renderButton(googleButtonRef.current, {
+      theme: "outline",
+      size: "large",
+      text: "continue_with",
+      shape: "pill",
+      width: 320,
+    });
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -57,11 +107,12 @@ const Register = () => {
         }
 
         toast.success("Registration successful");
-        console.log(data);
 
         setName("");
         setEmail("");
         setPassword("");
+
+        navigate("/login");
       } catch (error) {
         console.log("Registration error:", error);
         toast.error("Something went wrong");
@@ -75,7 +126,7 @@ const Register = () => {
         <Logo />
       </div>
 
-      <div className="flex flex-1 items-center justify-center px-4">
+      <div className="flex flex-1 items-center justify-center px-4 py-8">
         <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-xl border border-slate-200">
           <h2 className="text-2xl font-bold text-slate-900 text-center">
             Create Account
@@ -128,6 +179,16 @@ const Register = () => {
               Sign Up
             </button>
           </form>
+
+          <div className="my-5 flex items-center gap-3">
+            <div className="h-px flex-1 bg-slate-200"></div>
+            <span className="text-xs text-slate-400">OR</span>
+            <div className="h-px flex-1 bg-slate-200"></div>
+          </div>
+
+          <div className="flex justify-center">
+            <div ref={googleButtonRef}></div>
+          </div>
 
           <p className="mt-6 text-center text-sm text-slate-500">
             Already have an account?{" "}

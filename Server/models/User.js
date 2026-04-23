@@ -15,7 +15,19 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      default: "",
+    },
+    googleId: {
+      type: String,
+      default: null,
+    },
+    avatar: {
+      type: String,
+      default: "",
+    },
+    isPro: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true },
