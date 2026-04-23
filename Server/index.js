@@ -19,18 +19,6 @@ app.use("/api/auth", authRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-mongoose.connection.on("connected", () => {
-  console.log("Mongoose connected");
-});
-
-mongoose.connection.on("error", (err) => {
-  console.error("Mongoose connection error:", err);
-});
-
-mongoose.connection.on("disconnected", () => {
-  console.log("Mongoose disconnected");
-});
-
 async function startServer() {
   try {
     await mongoose.connect(process.env.MONGO_URI);
