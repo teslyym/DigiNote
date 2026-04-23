@@ -12,13 +12,24 @@ app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("API is running...");
-  console.log("Mongoose readyState:", mongoose.connection.readyState);
 });
 
 app.use("/api/notes", noteRoutes);
 app.use("/api/auth", authRoutes);
 
 const PORT = process.env.PORT || 5000;
+
+mongoose.connection.on("connected", () => {
+  console.log("Mongoose connected");
+});
+
+mongoose.connection.on("error", (err) => {
+  console.error("Mongoose connection error:", err);
+});
+
+mongoose.connection.on("disconnected", () => {
+  console.log("Mongoose disconnected");
+});
 
 async function startServer() {
   try {
