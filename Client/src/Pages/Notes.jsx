@@ -52,15 +52,17 @@ const Notes = () => {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">My Notes</h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
+            My Notes
+          </h1>
+          <p className="mt-1 max-w-md text-sm text-slate-500">
             Organize and access your notes in one place.
           </p>
         </div>
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+          className="w-full sm:w-auto rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
         >
           + New Note
         </button>

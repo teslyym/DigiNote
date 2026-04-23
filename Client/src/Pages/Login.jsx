@@ -43,6 +43,7 @@ const Login = () => {
         });
 
         const data = await res.json();
+        console.log("Login response:", data);
 
         if (!res.ok) {
           alert(data.message || "Login failed");
