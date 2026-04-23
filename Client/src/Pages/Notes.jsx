@@ -1,46 +1,95 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import NoteModal from "../Components/NoteModal";
 
 const Notes = () => {
   const [notes, setNotes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleSaveNote = (note) => {
-    setNotes([...notes, { ...note, id: Date.now() }]);
+  const fetchNotes = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/notes");
+      const data = await res.json();
+      setNotes(data);
+    } catch (error) {
+      console.log("Error fetching notes:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
+  const handleSaveNote = async (note) => {
+    try {
+      const res = await fetch("http://localhost:5000/api/notes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(note),
+      });
+
+      const data = await res.json();
+      setNotes((prevNotes) => [data, ...prevNotes]);
+    } catch (error) {
+      console.log("Error saving note:", error);
+    }
   };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-slate-900">My Notes</h1>
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900">My Notes</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Organize and access your notes in one place.
+          </p>
+        </div>
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-blue-600 text-white px-5 py-2 rounded-xl"
+          className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
         >
           + New Note
         </button>
       </div>
 
-      {/* Notes */}
       {notes.length === 0 ? (
-        <p className="text-slate-500">No notes yet</p>
+        <div className="flex min-h-[400px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-white text-center shadow-sm">
+          <div className="mb-4 text-5xl">📝</div>
+          <h2 className="text-xl font-semibold text-slate-800">No notes yet</h2>
+          <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
+            You have not created any notes yet. Start by adding your first note
+            and keep your ideas organized.
+          </p>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="mt-6 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+          >
+            Create First Note
+          </button>
+        </div>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {notes.map((note) => (
             <div
-              key={note.id}
-              className="p-4 border rounded-xl bg-white shadow-sm"
+              key={note._id}
+              className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
             >
-              <h2 className="font-bold">{note.title}</h2>
-              <p className="text-sm text-slate-600 mt-2">{note.content}</p>
+              <h2 className="text-lg font-semibold text-slate-800">
+                {note.title}
+              </h2>
+              <p className="mt-3 text-sm leading-6 text-slate-600">
+                {note.content}
+              </p>
+              <p className="mt-4 text-xs text-slate-400">
+                {new Date(note.createdAt).toLocaleString()}
+              </p>
             </div>
           ))}
         </div>
       )}
 
-      {/* Modal */}
       <NoteModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
