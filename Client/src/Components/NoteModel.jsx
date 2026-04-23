@@ -7,7 +7,7 @@ const NoteModal = ({ isOpen, onClose, onSave }) => {
   if (!isOpen) return null;
 
   const handleSave = () => {
-    if (!title || !content) return;
+    if (!title.trim() || !content.trim()) return;
 
     onSave({ title, content });
 
