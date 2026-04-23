@@ -4,6 +4,7 @@ import NoteModal from "../Components/NoteModal";
 const Notes = () => {
   const [notes, setNotes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [noteToEdit, setNoteToEdit] = useState(null);
 
   const fetchNotes = async () => {
     try {
@@ -21,16 +22,37 @@ const Notes = () => {
 
   const handleSaveNote = async (note) => {
     try {
-      const res = await fetch("http://localhost:5000/api/notes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(note),
-      });
+      if (note._id) {
+        const res = await fetch(`http://localhost:5000/api/notes/${note._id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: note.title,
+            content: note.content,
+          }),
+        });
 
-      const data = await res.json();
-      setNotes((prevNotes) => [data, ...prevNotes]);
+        const updatedNote = await res.json();
+
+        setNotes((prevNotes) =>
+          prevNotes.map((n) => (n._id === updatedNote._id ? updatedNote : n)),
+        );
+      } else {
+        const res = await fetch("http://localhost:5000/api/notes", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(note),
+        });
+
+        const newNote = await res.json();
+        setNotes((prevNotes) => [newNote, ...prevNotes]);
+      }
+
+      setNoteToEdit(null);
     } catch (error) {
       console.log("Error saving note:", error);
     }
@@ -48,11 +70,21 @@ const Notes = () => {
     }
   };
 
+  const handleEditClick = (note) => {
+    setNoteToEdit(note);
+    setIsModalOpen(true);
+  };
+
+  const handleNewNoteClick = () => {
+    setNoteToEdit(null);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
+          <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
             My Notes
           </h1>
           <p className="mt-1 max-w-md text-sm text-slate-500">
@@ -61,8 +93,8 @@ const Notes = () => {
         </div>
 
         <button
-          onClick={() => setIsModalOpen(true)}
-          className="w-full sm:w-auto rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+          onClick={handleNewNoteClick}
+          className="w-full rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 sm:w-auto"
         >
           + New Note
         </button>
@@ -77,7 +109,7 @@ const Notes = () => {
             and keep your ideas organized.
           </p>
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleNewNoteClick}
             className="mt-6 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
           >
             Create First Note
@@ -94,12 +126,20 @@ const Notes = () => {
                 <h2 className="text-lg font-semibold text-slate-800">
                   {note.title}
                 </h2>
-                <button
-                  onClick={() => handleDeleteNote(note._id)}
-                  className="text-sm font-medium text-red-500 transition hover:text-red-700"
-                >
-                  Delete
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => handleEditClick(note)}
+                    className="text-sm font-medium text-blue-500 hover:text-blue-700"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteNote(note._id)}
+                    className="text-sm font-medium text-red-500 hover:text-red-700"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
 
               <p className="mt-3 text-sm leading-6 text-slate-600">
@@ -116,8 +156,12 @@ const Notes = () => {
 
       <NoteModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setNoteToEdit(null);
+        }}
         onSave={handleSaveNote}
+        noteToEdit={noteToEdit}
       />
     </div>
   );
