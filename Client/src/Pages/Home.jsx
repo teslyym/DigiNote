@@ -44,7 +44,9 @@ const Home = () => {
 
               <p className="mx-auto mb-8 max-w-xl text-base leading-7 text-slate-600 sm:text-lg lg:mx-0">
                 Digi-Note helps you organize your thoughts, save important
-                ideas, and access your notes whenever you need them.
+                ideas, and access your notes whenever you need them. Start
+                building your digital notebook today and never lose a great idea
+                again!
               </p>
 
               <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
